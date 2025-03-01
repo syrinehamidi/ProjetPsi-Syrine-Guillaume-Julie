@@ -12,31 +12,46 @@ namespace Vraipsi
 {
     public class VisualisationGraphe
     {
+        /// <summary>
+        /// Classe permettant la visualisation et le dessin d'un graphe sous forme d'image
+        /// </summary>
         private Graphe graphe;
-        private int largeur = 1000;  
+        private int largeur = 1000;
         private int hauteur = 1000;
-        private int rayonNoeud = 35; 
+        private int rayonNoeud = 35;
 
+        /// <summary>
+        /// Initialise une nouvelle instance de la classe VisualisationGraphe avec un graphe donné.
+        /// </summary>
+        /// <param name="graphe">Le graphe à visualiser.</param>
         public VisualisationGraphe(Graphe graphe)
         {
             this.graphe = graphe;
         }
 
+        /// <summary>
+        ///  Dessine le graphe et l'enregistre sous forme d'image etant générée sous un chemin spécifique.
+        ///  Améliore la qualité du rendu pour un meilleur affichage.
+        ///  Calcule les positions des nœuds en les disposant en cercle.
+        ///  Dessine les liens entre les nœuds et les nœuds sous forme de cercles colorés.
+        ///  Dessine le cercle représentant le nœud et affiche l'ID du nœud au centre du cercle.
+        /// </summary>
+        /// <param name="filePath">Le chemin où enregistrer l'image.</param>
         public void DessinerGraphe(string filePath)
         {
             Bitmap bitmap = new Bitmap(largeur, hauteur);
             Graphics g = Graphics.FromImage(bitmap);
 
-            // Améliorer la qualité de rendu
+            
             g.SmoothingMode = SmoothingMode.AntiAlias;
             g.Clear(Color.White);
 
-            // Placement circulaire des nœuds avec un rayon plus large
+            
             PointF[] positions = new PointF[graphe.Noeuds.Count];
             double angle = 2 * Math.PI / graphe.Noeuds.Count;
             int centreX = largeur / 2;
             int centreY = hauteur / 2;
-            int rayon = Math.Min(largeur, hauteur) / 2 - 100; // Espace plus grand
+            int rayon = Math.Min(largeur, hauteur) / 2 - 100; 
 
             for (int i = 0; i < graphe.Noeuds.Count; i++)
             {
@@ -45,7 +60,7 @@ namespace Vraipsi
                 positions[i] = new PointF(x, y);
             }
 
-            // Dessiner les liens (en arrière-plan, plus fins et transparents)
+           
             Pen pen = new Pen(Color.LightGray, 1.5f); 
             pen.DashStyle = DashStyle.Solid; 
 
@@ -56,25 +71,25 @@ namespace Vraipsi
                 g.DrawLine(pen, p1, p2);
             }
 
-            // Dessiner les nœuds en noir
+            
             Font font = new Font("Arial", 12, FontStyle.Bold);
-            Brush brushNoeud = Brushes.Black;
+            Brush brushNoeud = Brushes.Pink;
             Brush brushTexte = Brushes.White;
 
             for (int i = 0; i < graphe.Noeuds.Count; i++)
             {
                 PointF p = positions[i];
 
-                // Dessiner le cercle du nœud
+                
                 g.FillEllipse(brushNoeud, p.X - rayonNoeud / 2, p.Y - rayonNoeud / 2, rayonNoeud, rayonNoeud);
 
-                // Dessiner l'ID du nœud (centré)
+                
                 string texte = (i + 1).ToString();
                 SizeF textSize = g.MeasureString(texte, font);
                 g.DrawString(texte, font, brushTexte, p.X - textSize.Width / 2, p.Y - textSize.Height / 2);
             }
 
-            // Sauvegarde de l'image
+            
             bitmap.Save(filePath, ImageFormat.Png);
             g.Dispose();
             bitmap.Dispose();
