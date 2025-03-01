@@ -1,8 +1,7 @@
-#DROP DATABASE IF EXISTS livInParis; # A utiliser si base déjà existante
+DROP DATABASE IF EXISTS livinparis;
 
-CREATE DATABASE IF NOT EXISTS livInParis;
-USE livInParis;
-
+CREATE DATABASE IF NOT EXISTS livinparis;
+USE livinparis;
 # -----------------------------------------------------------------------------
 #       TABLE : ligneDeCommande
 # -----------------------------------------------------------------------------
@@ -10,13 +9,13 @@ USE livInParis;
 CREATE TABLE IF NOT EXISTS ligneDeCommande
  (
    idMet INTEGER NOT NULL  ,
-   idLivraison INTEGER NOT NULL  ,
    idCommande INTEGER NOT NULL  ,
+   idLivraison INTEGER NOT NULL  ,
    dateLivraison DATETIME NOT NULL  ,
    lieuLivraison VARCHAR(128) NOT NULL  ,
    quantite INTEGER NOT NULL  ,
    precisions VARCHAR(255) NULL  
-   , PRIMARY KEY (idMet,idLivraison) 
+   , PRIMARY KEY (idMet,idCommande,idLivraison) 
  ) 
  comment = "";
 
@@ -24,13 +23,14 @@ CREATE TABLE IF NOT EXISTS ligneDeCommande
 #       INDEX DE LA TABLE ligneDeCommande
 # -----------------------------------------------------------------------------
 
-CREATE  INDEX i_Fk_ligneDeCommande_livraison
+
+CREATE  INDEX iFkLigneDeCommandeLivraison
      ON ligneDeCommande (idLivraison ASC);
 
-CREATE  INDEX i_Fk_ligneDeCommande_commande
+CREATE  INDEX iFkLigneDeCommandeCommande
      ON ligneDeCommande (idCommande ASC);
 
-CREATE  INDEX i_Fk_ligneDeCommande_met
+CREATE  INDEX iFkLigneDeCommandeMet
      ON ligneDeCommande (idMet ASC);
 
 # -----------------------------------------------------------------------------
@@ -51,7 +51,8 @@ CREATE TABLE IF NOT EXISTS commande
 #       INDEX DE LA TABLE commande
 # -----------------------------------------------------------------------------
 
-CREATE  INDEX i_Fk_commande_client
+
+CREATE  INDEX iFkCommandeClient
      ON commande (idTiers ASC);
 
 # -----------------------------------------------------------------------------
@@ -90,7 +91,8 @@ CREATE TABLE IF NOT EXISTS livraison
 #       INDEX DE LA TABLE livraison
 # -----------------------------------------------------------------------------
 
-CREATE  INDEX i_Fk_livraison_cuisinier
+
+CREATE  INDEX iFkLivraisonCuisinier
      ON livraison (idTiers ASC);
 
 # -----------------------------------------------------------------------------
@@ -136,12 +138,12 @@ CREATE TABLE IF NOT EXISTS client
 
 CREATE TABLE IF NOT EXISTS note
  (
-   idClient INTEGER NOT NULL  ,
-   idCuisinier INTEGER NOT NULL  ,
-   dateNote DATETIME NOT NULL  ,
+   idTiers1 INTEGER NOT NULL  ,
+   idTiers INTEGER NOT NULL  ,
+   dateNote INTEGER NOT NULL  ,
    noteCommande INTEGER NOT NULL  ,
    commentaire VARCHAR(255) NULL  
-   , PRIMARY KEY (idClient,idCuisinier,dateNote) 
+   , PRIMARY KEY (idTiers1,idTiers,dateNote) 
  ) 
  comment = "";
 
@@ -149,11 +151,12 @@ CREATE TABLE IF NOT EXISTS note
 #       INDEX DE LA TABLE note
 # -----------------------------------------------------------------------------
 
-CREATE  INDEX i_Fk_note_cuisinier
-     ON note (idCuisinier ASC);
 
-CREATE  INDEX i_Fk_note_client
-     ON note (idClient ASC);
+CREATE  INDEX iFkNoteCuisinier
+     ON note (idTiers ASC);
+
+CREATE  INDEX iFkNoteClient
+     ON note (idTiers1 ASC);
 
 # -----------------------------------------------------------------------------
 #       TABLE : met
@@ -165,7 +168,7 @@ CREATE TABLE IF NOT EXISTS met
    idTiers INTEGER NOT NULL  ,
    nom VARCHAR(30) NOT NULL  ,
    photo LONGBLOB NOT NULL  ,
-   pourCbDePers INTEGER NOT NULL  ,
+   pourcBDepers INTEGER NOT NULL  ,
    prixParPers INTEGER NOT NULL  ,
    dureeConservation INTEGER NOT NULL  ,
    description VARCHAR(255) NOT NULL  ,
@@ -179,7 +182,8 @@ CREATE TABLE IF NOT EXISTS met
 #       INDEX DE LA TABLE met
 # -----------------------------------------------------------------------------
 
-CREATE  INDEX i_Fk_met_cuisinier
+
+CREATE  INDEX iFkMetCuisinier
      ON met (idTiers ASC);
 
 # -----------------------------------------------------------------------------
@@ -202,70 +206,6 @@ CREATE TABLE IF NOT EXISTS compositionMet
  (
    idMet INTEGER NOT NULL  ,
    idIngredient INTEGER NOT NULL  ,
-   volume REAL(5,2) NOT NULL  
-   , PRIMARY KEY (idMet,idIngredient) 
- ) 
- comment = "";
-
-# -----------------------------------------------------------------------------
-#       INDEX DE LA TABLE note
-# -----------------------------------------------------------------------------
-
-
-CREATE  INDEX i_Fk_note_cuisinier
-     ON note (idCuisinier ASC);
-
-CREATE  INDEX i_Fk_note_client
-     ON note (idClient ASC);
-
-# -----------------------------------------------------------------------------
-#       TABLE : met
-# -----------------------------------------------------------------------------
-
-CREATE TABLE IF NOT EXISTS met
- (
-   idMet VARCHAR(128) NOT NULL  ,
-   idTiers INTEGER NOT NULL  ,
-   nom VARCHAR(30) NOT NULL  ,
-   photo LONGBLOB NOT NULL  ,
-   pourCbDePers INTEGER NOT NULL  ,
-   prixParPers INTEGER NOT NULL  ,
-   dureeConservation INTEGER NOT NULL  ,
-   description VARCHAR(255) NOT NULL  ,
-   origineCulinaire VARCHAR(30) NULL  ,
-   regimeAlimentaire VARCHAR(30) NULL  
-   , PRIMARY KEY (idMet) 
- ) 
- comment = "";
-
-# -----------------------------------------------------------------------------
-#       INDEX DE LA TABLE met
-# -----------------------------------------------------------------------------
-
-
-CREATE  INDEX i_Fk_met_cuisinier
-     ON met (idTiers ASC);
-
-# -----------------------------------------------------------------------------
-#       TABLE : ingredient
-# -----------------------------------------------------------------------------
-
-CREATE TABLE IF NOT EXISTS ingredient
- (
-   idIngredient VARCHAR(128) NOT NULL  ,
-   nom VARCHAR(128) NULL  
-   , PRIMARY KEY (idIngredient) 
- ) 
- comment = "";
-
-# -----------------------------------------------------------------------------
-#       TABLE : compositionMet
-# -----------------------------------------------------------------------------
-
-CREATE TABLE IF NOT EXISTS compositionMet
- (
-   idMet VARCHAR(128) NOT NULL  ,
-   idIngredient VARCHAR(128) NOT NULL  ,
    volume REAL(5,2) NOT NULL  
    , PRIMARY KEY (idMet,idIngredient) 
  ) 
@@ -276,11 +216,12 @@ CREATE TABLE IF NOT EXISTS compositionMet
 # -----------------------------------------------------------------------------
 
 
-CREATE  INDEX i_Fk_compositionMet_met
+CREATE  INDEX iFkCompositionMetMet
      ON compositionMet (idMet ASC);
 
-CREATE  INDEX i_Fk_compositionMet_ingredient
+CREATE  INDEX iFkCompositionMetIngredient
      ON compositionMet (idIngredient ASC);
+
 
 # -----------------------------------------------------------------------------
 #       CREATION DES REFERENCES DE TABLE
@@ -288,62 +229,62 @@ CREATE  INDEX i_Fk_compositionMet_ingredient
 
 
 ALTER TABLE ligneDeCommande 
-  ADD FOREIGN KEY fk_ligneDeCommande_livraison (idLivraison)
+  ADD FOREIGN KEY fkLigneDeCommandeLivraison (idLivraison)
       REFERENCES livraison (idLivraison) ;
 
 
 ALTER TABLE ligneDeCommande 
-  ADD FOREIGN KEY fk_ligneDeCommande_commande (idCommande)
+  ADD FOREIGN KEY fkLigneDeCommandeCommande (idCommande)
       REFERENCES commande (idCommande) ;
 
 
 ALTER TABLE ligneDeCommande 
-  ADD FOREIGN KEY fk_ligneDeCommande_met (idMet)
+  ADD FOREIGN KEY fkLigneDeCommandeMet (idMet)
       REFERENCES met (idMet) ;
 
 
 ALTER TABLE commande 
-  ADD FOREIGN KEY fk_commande_client (idTiers)
+  ADD FOREIGN KEY fkCommandeClient (idTiers)
       REFERENCES client (idTiers) ;
 
 
 ALTER TABLE cuisinier 
-  ADD FOREIGN KEY fk_cuisinier_tiers (idTiers)
+  ADD FOREIGN KEY fkCuisinierTiers (idTiers)
       REFERENCES tiers (idTiers) ;
 
 
 ALTER TABLE livraison 
-  ADD FOREIGN KEY fk_livraison_cuisinier (idTiers)
+  ADD FOREIGN KEY fkLivraisonCuisinier (idTiers)
       REFERENCES cuisinier (idTiers) ;
 
 
 ALTER TABLE client 
-  ADD FOREIGN KEY fk_client_tiers (idTiers)
+  ADD FOREIGN KEY fkClientTiers (idTiers)
       REFERENCES tiers (idTiers) ;
 
 
 ALTER TABLE note 
-  ADD FOREIGN KEY fk_note_cuisinier (idCuisinier)
+  ADD FOREIGN KEY fkNoteCuisinier (idTiers)
       REFERENCES cuisinier (idTiers) ;
 
 
 ALTER TABLE note 
-  ADD FOREIGN KEY fk_note_client (idClient)
+  ADD FOREIGN KEY fkNoteClient (idTiers1)
       REFERENCES client (idTiers) ;
 
 
 ALTER TABLE met 
-  ADD FOREIGN KEY fk_met_cuisinier (idTiers)
+  ADD FOREIGN KEY fkMetCuisinier (idTiers)
       REFERENCES cuisinier (idTiers) ;
 
 
 ALTER TABLE compositionMet 
-  ADD FOREIGN KEY fk_compositionMet_met (idMet)
+  ADD FOREIGN KEY fkCompositionMetMet (idMet)
       REFERENCES met (idMet) ;
 
 
 ALTER TABLE compositionMet 
-  ADD FOREIGN KEY fk_compositionMet_ingredient (idIngredient)
+  ADD FOREIGN KEY fkCompositionMetIngredient (idIngredient)
       REFERENCES ingredient (idIngredient) ;
       
       
