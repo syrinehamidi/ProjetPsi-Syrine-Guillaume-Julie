@@ -73,7 +73,7 @@ namespace PSI_Rendu_1
         /// </summary>
         /// <param name="idSource">identifiant du noeud source du lien</param>
         /// <param name="idCible">identifiant du noeud cible du lien</param>
-        private void AjouterLien(int idSource, int idCible)
+        public void AjouterLien(int idSource, int idCible)
         {            
             Noeud source = noeuds[idSource - 1];
             Noeud cible = noeuds[idCible - 1];
@@ -83,15 +83,6 @@ namespace PSI_Rendu_1
 
             liens.Add(new Lien(source, cible));
             liens.Add(new Lien(cible, source));
-        }
-        /// <summary>
-        /// permet d'avoir accès à la methode AjouterLien pour les tests unitaires
-        /// </summary>
-        /// <param name="idSource"></param>
-        /// <param name="idCible"></param>
-        public void AjouterLienPublic(int idSource, int idCible)
-        {
-            AjouterLien(idSource, idCible);
         }
 
         /// <summary>
@@ -311,6 +302,43 @@ namespace PSI_Rendu_1
 
                 couleur[y.Id - 1] = 2;
             }
+        }
+
+
+        /// <summary>
+        /// L'algorithme détecte un cycle dans un graphe connexe en utilisant un parcours en profondeur (DFS). 
+        /// 
+        /// La méthode ContientCycle() lance le DFS depuis le premier nœud (noeuds[0]), en initialisant un tableau 
+        /// visites pour suivre les nœuds explorés. La fonction récursive DFS() marque chaque nœud comme visité, 
+        /// puis explore ses voisins. Si un voisin n'a pas encore été visité, DFS() est appelé récursivement. 
+        /// 
+        /// Si un voisin déjà visité est rencontré et qu'il n'est pas le parent du nœud actuel, un cycle est détecté et la fonction retourne true. 
+        /// Sinon, après avoir exploré tous les voisins, elle retourne false.
+        /// </summary>
+        /// <returns>retourne true si un cycle est trouvé, sinon false</returns>
+        public bool ContientCycle()
+        {
+            return DetectionCycle(noeuds[0], -1, new bool[noeuds.Count]);
+        }
+        private bool DetectionCycle(Noeud courant, int parent, bool[] visites)
+        {
+            visites[courant.Id - 1] = true;
+
+            foreach (Lien lien in courant.Liens)
+            {
+                Noeud voisin = lien.Cible;
+
+                if (!visites[voisin.Id - 1])
+                {
+                    if (DetectionCycle(voisin, courant.Id, visites))
+                        return true;
+                }
+                else if (voisin.Id != parent)
+                {
+                    return true; 
+                }
+            }
+            return false;
         }
 
         #endregion

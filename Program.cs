@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace Vraipsi
+namespace PSI_Rendu_1
 {
     public class Program
     {
@@ -36,26 +36,27 @@ namespace Vraipsi
             }
 
 
-
             karate.DFS(1);
-
-
 
             karate.BFS(4);
 
+            Console.WriteLine("\n\nLe graph karaté contient des cycle ? -> " + karate.ContientCycle());
 
 
-            Console.WriteLine();
+            Console.WriteLine("\n\n");
 
-            Graphe karategraphe = new Graphe();
-            VisualisationGraphe visualisation = new VisualisationGraphe(karategraphe);
-            visualisation.DessinerGraphe("graphe.png");
+
+            
+
+            VisualisationGraphe visualisationKarate = new VisualisationGraphe(karate);
+
+
+            visualisationKarate.DessinerGraphe("graphe.png");
 
             Console.WriteLine("\nLe graphe a été enregistré sous 'graphe.png'");
 
-            // Ouvrir automatiquement l'image
+            
             Process.Start(new ProcessStartInfo("graphe.png") { UseShellExecute = true });
-
         }
     }
 }
