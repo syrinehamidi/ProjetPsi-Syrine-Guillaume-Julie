@@ -1,4 +1,6 @@
-﻿namespace PSI_Rendu_1
+﻿using System.Diagnostics;
+
+namespace Vraipsi
 {
     public class Program
     {
@@ -44,6 +46,16 @@
 
 
             Console.WriteLine();
+
+            Graphe karategraphe = new Graphe();
+            VisualisationGraphe visualisation = new VisualisationGraphe(karategraphe);
+            visualisation.DessinerGraphe("graphe.png");
+
+            Console.WriteLine("\nLe graphe a été enregistré sous 'graphe.png'");
+
+            // Ouvrir automatiquement l'image
+            Process.Start(new ProcessStartInfo("graphe.png") { UseShellExecute = true });
+
         }
     }
 }
