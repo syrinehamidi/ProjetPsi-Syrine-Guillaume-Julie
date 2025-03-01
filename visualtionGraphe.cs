@@ -13,9 +13,9 @@ namespace Vraipsi
     public class VisualisationGraphe
     {
         private Graphe graphe;
-        private int largeur = 1000;  // Plus large pour plus d'espacement
+        private int largeur = 1000;  
         private int hauteur = 1000;
-        private int rayonNoeud = 35; // Taille augmentée pour plus de clarté
+        private int rayonNoeud = 35; 
 
         public VisualisationGraphe(Graphe graphe)
         {
@@ -46,8 +46,8 @@ namespace Vraipsi
             }
 
             // Dessiner les liens (en arrière-plan, plus fins et transparents)
-            Pen pen = new Pen(Color.LightGray, 1.5f); // Couleur plus claire et plus fine
-            pen.DashStyle = DashStyle.Solid; // Style de ligne (peut être Dash pour des pointillés)
+            Pen pen = new Pen(Color.LightGray, 1.5f); 
+            pen.DashStyle = DashStyle.Solid; 
 
             foreach (var lien in graphe.Lien)
             {
