@@ -9,9 +9,9 @@ USE livInParis;
 
 CREATE TABLE IF NOT EXISTS ligneDeCommande
  (
-   idMet VARCHAR(128) NOT NULL  ,
-   idLivraison CHAR(32) NOT NULL  ,
-   idCommande VARCHAR(128) NOT NULL  ,
+   idMet INTEGER NOT NULL  ,
+   idLivraison INTEGER NOT NULL  ,
+   idCommande INTEGER NOT NULL  ,
    dateLivraison DATETIME NOT NULL  ,
    lieuLivraison VARCHAR(128) NOT NULL  ,
    quantite INTEGER NOT NULL  ,
@@ -23,7 +23,6 @@ CREATE TABLE IF NOT EXISTS ligneDeCommande
 # -----------------------------------------------------------------------------
 #       INDEX DE LA TABLE ligneDeCommande
 # -----------------------------------------------------------------------------
-
 
 CREATE  INDEX i_Fk_ligneDeCommande_livraison
      ON ligneDeCommande (idLivraison ASC);
@@ -40,7 +39,7 @@ CREATE  INDEX i_Fk_ligneDeCommande_met
 
 CREATE TABLE IF NOT EXISTS commande
  (
-   idCommande VARCHAR(128) NOT NULL  ,
+   idCommande INTEGER NOT NULL  ,
    idTiers INTEGER NOT NULL  ,
    prix REAL(4,2) NOT NULL  ,
    dateCommande DATETIME NOT NULL  
@@ -51,7 +50,6 @@ CREATE TABLE IF NOT EXISTS commande
 # -----------------------------------------------------------------------------
 #       INDEX DE LA TABLE commande
 # -----------------------------------------------------------------------------
-
 
 CREATE  INDEX i_Fk_commande_client
      ON commande (idTiers ASC);
@@ -81,7 +79,7 @@ CREATE TABLE IF NOT EXISTS cuisinier
 
 CREATE TABLE IF NOT EXISTS livraison
  (
-   idLivraison CHAR(32) NOT NULL  ,
+   idLivraison INTEGER NOT NULL  ,
    idTiers INTEGER NOT NULL  ,
    dateLivraison DATETIME NOT NULL  
    , PRIMARY KEY (idLivraison) 
@@ -91,7 +89,6 @@ CREATE TABLE IF NOT EXISTS livraison
 # -----------------------------------------------------------------------------
 #       INDEX DE LA TABLE livraison
 # -----------------------------------------------------------------------------
-
 
 CREATE  INDEX i_Fk_livraison_cuisinier
      ON livraison (idTiers ASC);
@@ -145,6 +142,68 @@ CREATE TABLE IF NOT EXISTS note
    noteCommande INTEGER NOT NULL  ,
    commentaire VARCHAR(255) NULL  
    , PRIMARY KEY (idClient,idCuisinier,dateNote) 
+ ) 
+ comment = "";
+
+# -----------------------------------------------------------------------------
+#       INDEX DE LA TABLE note
+# -----------------------------------------------------------------------------
+
+CREATE  INDEX i_Fk_note_cuisinier
+     ON note (idCuisinier ASC);
+
+CREATE  INDEX i_Fk_note_client
+     ON note (idClient ASC);
+
+# -----------------------------------------------------------------------------
+#       TABLE : met
+# -----------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS met
+ (
+   idMet INTEGER NOT NULL  ,
+   idTiers INTEGER NOT NULL  ,
+   nom VARCHAR(30) NOT NULL  ,
+   photo LONGBLOB NOT NULL  ,
+   pourCbDePers INTEGER NOT NULL  ,
+   prixParPers INTEGER NOT NULL  ,
+   dureeConservation INTEGER NOT NULL  ,
+   description VARCHAR(255) NOT NULL  ,
+   origineCulinaire VARCHAR(30) NULL  ,
+   regimeAlimentaire VARCHAR(30) NULL  
+   , PRIMARY KEY (idMet) 
+ ) 
+ comment = "";
+
+# -----------------------------------------------------------------------------
+#       INDEX DE LA TABLE met
+# -----------------------------------------------------------------------------
+
+CREATE  INDEX i_Fk_met_cuisinier
+     ON met (idTiers ASC);
+
+# -----------------------------------------------------------------------------
+#       TABLE : ingredient
+# -----------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS ingredient
+ (
+   idIngredient INTEGER NOT NULL  ,
+   nom VARCHAR(128) NULL  
+   , PRIMARY KEY (idIngredient) 
+ ) 
+ comment = "";
+
+# -----------------------------------------------------------------------------
+#       TABLE : compositionMet
+# -----------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS compositionMet
+ (
+   idMet INTEGER NOT NULL  ,
+   idIngredient INTEGER NOT NULL  ,
+   volume REAL(5,2) NOT NULL  
+   , PRIMARY KEY (idMet,idIngredient) 
  ) 
  comment = "";
 
