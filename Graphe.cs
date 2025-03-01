@@ -84,6 +84,15 @@ namespace PSI_Rendu_1
             liens.Add(new Lien(source, cible));
             liens.Add(new Lien(cible, source));
         }
+        /// <summary>
+        /// permet d'avoir accès à la methode AjouterLien pour les tests unitaires
+        /// </summary>
+        /// <param name="idSource"></param>
+        /// <param name="idCible"></param>
+        public void AjouterLienPublic(int idSource, int idCible)
+        {
+            AjouterLien(idSource, idCible);
+        }
 
         /// <summary>
         /// Lis le fichier qui permet de peupler le graph. 
